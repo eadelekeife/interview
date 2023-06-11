@@ -22,12 +22,7 @@ function App(props) {
 
   useEffect(() => {
     if (users.length) setloadingButton(false)
-  }, [])
-
-  const handleChangeSearchTerm = e => {
-    setSearchTerm(e.target.value);
-  };
-
+  }, [users.length])
 
   const handleChangeGenderFilter = e => {
     setGenderFilter(e);
@@ -159,7 +154,7 @@ function App(props) {
     <div className="App">
       <div className="contain">
         {
-          loadingButton ?
+          !loadingButton ?
             <div>
               <>
                 <div className="filter-box">
