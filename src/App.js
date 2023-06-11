@@ -31,7 +31,7 @@ function App(props) {
 
   useEffect(() => {
     if (users.length) setloadingButton(false)
-    if (!error) openNotificationIcon()
+    if (error) openNotificationIcon()
     let extensionArray = [];
     users.map(emailAddresses => {
       let emailExtentsion = emailAddresses.email.slice(emailAddresses.email.lastIndexOf('.'));
