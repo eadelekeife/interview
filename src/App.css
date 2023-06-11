@@ -32,6 +32,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -59,6 +60,17 @@ button {
 
 .table-data {
   margin-top: 5%;
+}
+
+.ant-select-selector {
+  height: 3rem !important;
+  padding-top: 5px !important;
+}
+
+label {
+  width: 100%;
+  display: block;
+  font-size: .9rem;
 }
 
 @media screen and (max-width: 720px) {

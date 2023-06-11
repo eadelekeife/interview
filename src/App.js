@@ -3,7 +3,7 @@ import "./App.css";
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch, connect } from 'react-redux';
 import { fetchUsers } from './actions/userActions';
-import { Table, Input, Select, Spin } from 'antd';
+import { Table, Input, Select, Spin, notification } from 'antd';
 
 function App(props) {
   const dispatch = useDispatch();
@@ -15,48 +15,59 @@ function App(props) {
 
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [genderFilter, setGenderFilter] = useState('all');
+  const [emailFilter, setEmailFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [usersPerPage] = useState(10);
   const [loadingButton, setloadingButton] = useState(true);
+  const [emailExtensions, setEmailExtensions] = useState(['all']);
+
+  const openNotificationIcon = () => {
+    notification.open({
+      description:
+        'An error occurred while fetching data. Please try again'
+    });
+  };
+
 
   useEffect(() => {
     if (users.length) setloadingButton(false)
+    if (!error) openNotificationIcon()
+    let extensionArray = [];
+    users.map(emailAddresses => {
+      let emailExtentsion = emailAddresses.email.slice(emailAddresses.email.lastIndexOf('.'));
+      if (!extensionArray.includes(emailExtentsion)) extensionArray.push(emailExtentsion);
+    })
+    setEmailExtensions([...emailExtensions, ...extensionArray])
   }, [users.length])
 
-  const handleChangeGenderFilter = e => {
-    setGenderFilter(e);
+  const handleChangeemailFilter = e => {
+    setEmailFilter(e);
     setCurrentPage(1);
   };
 
   const handleClearFilters = () => {
     setSearchTerm('');
-    setGenderFilter('all');
+    setEmailFilter('all');
     setCurrentPage(1);
   };
 
+  const updateSearchTerm = e => {
+    setSearchTerm(e.target.value)
+  }
+
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
-
-  // const filteredUsers = users.filter(user => {
-  //   const name = user?.name.toLowerCase();
-  //   const username = user?.username.toLowerCase();
-  //   const searchTermLower = searchTerm.toLowerCase();
-  //   const gender = user?.gender.toLowerCase();
-  //   return (
-  //     (name.includes(searchTermLower) || username.includes(searchTermLower)) &&
-  //     (genderFilter === 'all' || genderFilter === gender)
-  //   );
-  // });
 
   const filterForMe = users.filter(user => {
     const name = user?.name.toLowerCase();
     const username = user?.username.toLowerCase();
     const searchTermLower = searchTerm.toLowerCase();
-    // const gender = user?.gender.toLowerCase();
-    return (name.includes(searchTermLower) || username.includes(searchTermLower))
-    // &&
-    //   (genderFilter === 'all' || genderFilter === gender)
+    const email = user?.email.toLowerCase();
+    if (emailFilter === "all") {
+      return name.includes(searchTermLower) || username.includes(searchTermLower)
+    } else {
+      return (name.includes(searchTermLower) || username.includes(searchTermLower)) && email.includes(`${emailFilter}`)
+    }
   })
 
   // const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
@@ -146,10 +157,6 @@ function App(props) {
     }
   })
 
-  const updateInputBox = e => {
-    setSearchTerm(e.target.value)
-  }
-
   return (
     <div className="App">
       <div className="contain">
@@ -159,41 +166,34 @@ function App(props) {
               <>
                 <div className="filter-box">
                   <div>
-                    <Input type="text"
-                      style={{ height: '3rem' }}
-                      value={searchTerm} onChange={updateInputBox} />
+                    <label htmlFor="searchName">Name / Email</label>
+                    <Input type="text" id="searchName"
+                      style={{ height: '3rem', width: 200 }}
+                      value={searchTerm} onChange={updateSearchTerm} />
                   </div>
-                  {/* <div>
-                <Select
-                  defaultValue="lucy"
-                  style={{
-                    width: 120,
-                  }}
-                  onChange={handleChangeGenderFilter}
-                  options={[
-                    {
-                      value: 'all',
-                      label: 'All',
-                    },
-                    {
-                      value: 'male',
-                      label: 'Male',
-                    },
-                    {
-                      value: 'female',
-                      label: 'Female',
-                    }
-                  ]}
-                />
-              </div> */}
                   <div>
+                    <label htmlFor="searchEmail">Email extension</label>
+                    <Select htmlFor="searchEmail"
+                      defaultValue={emailFilter}
+                      style={{
+                        width: 200,
+                        height: '3rem'
+                      }}
+                      onChange={handleChangeemailFilter}>
+                      {emailExtensions.map((ext, index) => {
+                        return <Select.Option value={ext} key={index}>{ext}</Select.Option>
+                      })}
+                    </Select>
+                  </div>
+                  <div>
+                    <label style={{ visibility: 'hidden' }} htmlFor="searchEmail">Email extension</label>
                     <button
                       onClick={() => handleClearFilters()}
                     >Clear Input Field</button>
                   </div>
                 </div>
                 <div className="table-data">
-                  <Table dataSource={dataSource} columns={columns} />;
+                  <Table dataSource={dataSource} columns={columns} />
                 </div>
               </>
             </div>
