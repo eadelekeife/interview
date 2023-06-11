@@ -1,5 +1,5 @@
 .App {
-  text-align: center;
+  /* text-align: center; */
 }
 
 .App-logo {
@@ -34,5 +34,37 @@
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+
+.contain {
+  padding: 20px 3%;
+}
+
+.filter-box {
+  display: flex;
+  grid-gap: 10px;
+}
+
+button {
+  background: #282c34;
+  border: 1px solid #282c34;
+  color: #fff;
+  padding: 0px 25px;
+  height: 3rem;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.table-data {
+  margin-top: 5%;
+}
+
+@media screen and (max-width: 720px) {
+  .filter-box {
+    flex-direction: column;
+    align-items: unset;
+    width: 60%;
   }
 }
